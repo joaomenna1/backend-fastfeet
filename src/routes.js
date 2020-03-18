@@ -12,6 +12,7 @@ routes.post('/sessions', SessionsController.store);
 routes.post('/user', authMiddleware, UserController.store);
 
 /* Routes recipients */
-routes.post('/recipients', RecipientController.store);
+routes.post('/recipients/', RecipientController.store);
+routes.put('/recipients/:id', RecipientController.update);
 
 export default routes;
