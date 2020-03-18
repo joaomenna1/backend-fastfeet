@@ -5,13 +5,13 @@ import Recipient from '../Models/Recipient';
 class RecipientController {
   async store(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string().required(),
-      street: Yup.string().required(),
-      number: Yup.number().required(),
-      complement: Yup.string().required(),
-      state: Yup.string().required(),
-      city: Yup.string().required(),
-      cep: Yup.number().required(),
+      name: Yup.string(),
+      street: Yup.string(),
+      number: Yup.number(),
+      complement: Yup.string(),
+      state: Yup.string(),
+      city: Yup.string(),
+      cep: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -35,7 +35,7 @@ class RecipientController {
       state,
       city,
       cep,
-    } = await Recipient.create(req.body);
+    } = await Recipient.create(req.body, { new: true });
 
     return res.json({
       id,
@@ -50,6 +50,20 @@ class RecipientController {
   }
 
   async update(req, res) {
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      street: Yup.string().required(),
+      number: Yup.number().required(),
+      complement: Yup.string().required(),
+      state: Yup.string().required(),
+      city: Yup.string().required(),
+      cep: Yup.number().required(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validations fails' });
+    }
+
     const { id } = req.params;
 
     const recipient = await Recipient.findByPk(id);
@@ -58,9 +72,19 @@ class RecipientController {
       return res.status(401).json({ error: 'Validations fails' });
     }
 
-    const newRecipient = await Recipient.update(req.body);
+    const { name, street, number, complement, state, city, cep } = req.body;
 
-    return res.json(newRecipient);
+    await recipient.update({
+      name,
+      street,
+      number,
+      complement,
+      state,
+      city,
+      cep,
+    });
+
+    return res.json({ name, street, number, complement, state, city, cep });
   }
 }
 
