@@ -16,11 +16,12 @@ module.exports = {
         references: { model: 'files', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
-        allowNull: false,
+        allowNull: true,
       },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       created_at: {
         type: Sequelize.DATE,
