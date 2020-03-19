@@ -19,7 +19,7 @@ routes.post('/user', authMiddleware, UserController.store);
 /* sessions */
 routes.post('/sessions', SessionsController.store);
 
-/* routes.use(authMiddleware); */
+routes.use(authMiddleware);
 
 /* Routes recipients */
 routes.post('/recipients/', RecipientController.store);
