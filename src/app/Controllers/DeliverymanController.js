@@ -34,27 +34,64 @@ class DeliverymanControler {
   }
 
   async index(req, res) {
-    const deliverymens = Deliverymen.findAll({
+    const { page = 1 } = req.query;
+
+    const response = await Deliverymen.findAll({
       order: ['id'],
-      attributes: ['id', 'name', 'avatar_id', 'email'],
+      attributes: ['id', 'name', 'email', 'avatar_id'],
+      limit: 10,
+      offset: (page - 1) * 10,
       include: [
         {
           model: File,
           as: 'avatar',
-          attributes: ['name', 'path', 'url'],
+          attributes: ['id', 'path', 'url'],
         },
       ],
     });
 
-    return res.json(deliverymens);
+    return res.json(response);
   }
 
   async update(req, res) {
-    return res.json();
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      email: Yup.string().required(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validations fails' });
+    }
+
+    const { id } = req.params;
+
+    const deliveryman = await Deliverymen.findByPk(id);
+
+    if (!deliveryman) {
+      return res.status(401).json({ error: 'Deliveryman does not exist' });
+    }
+
+    const { name, email } = req.body;
+
+    await deliveryman.update({ name, email });
+
+    return res.json({ name, email });
   }
 
+  // eslint-disable-next-line consistent-return
   async destroy(req, res) {
-    return res.json();
+    const { id } = req.params;
+    const deliverymanExist = await Deliverymen.findByPk(id);
+
+    if (!deliverymanExist) {
+      return res.status(401).json({ error: 'Deliveryman does not exist' });
+    }
+
+    await Deliverymen.destroy({
+      where: { id: req.params.id },
+    })
+      .then(() => res.json({ message: 'removed.' }))
+      .catch(() => res.json({ error: 'fails in methods remove' }));
   }
 }
 
