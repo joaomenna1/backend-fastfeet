@@ -9,6 +9,13 @@ module.exports = {
       },
       recipient_id: {
         type: Sequelize.INTEGER,
+        references: { model: 'recipients', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+        allowNull: true,
+      },
+      deliveryman_id: {
+        type: Sequelize.INTEGER,
         references: { model: 'deliverymens', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
@@ -27,15 +34,15 @@ module.exports = {
       },
       canceled_at: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       start_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       end_date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       created_at: {
         type: Sequelize.DATE,

@@ -4,9 +4,7 @@ import Order from '../Models/Order';
 import Recipient from '../Models/Recipient';
 import Deliverymen from '../Models/Deliverymen';
 
-/* Etapa importante do projeto não desista! */
-/* vms nessa! */
-class RegisterOrders {
+class RegisterOrdersController {
   async store(req, res) {
     const schema = Yup.object().shape({
       product: Yup.string().required(),
@@ -36,10 +34,24 @@ class RegisterOrders {
         .json({ error: 'Deliveryman not found or does not exist.' });
     }
 
-    const register = await Order.create(req.body);
+    const { product } = await Order.create(req.body);
 
-    return res.json(register);
+    const productExist = await Order.findOne({
+      where: { product: req.body.product },
+    });
+
+    if (productExist) {
+      return res.status(400).json({ error: 'Product already exist.' });
+    }
+
+    return res.json({ product, recipient_id, deliveryman_id });
   }
 }
 
-export default new RegisterOrders();
+export default new RegisterOrdersController();
+
+/*
+  funcionalidade para adicionar no futuro
+  se o produto existe dentro de bd, verificar se é a mesma palavra
+  tanto em maisculo e minusculo
+*/
