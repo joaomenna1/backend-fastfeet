@@ -24,9 +24,9 @@ class DeliverymanControler {
       return res.status(401).json({ error: 'Deliveryman  exist.' });
     }
 
-    const { name, email } = await Deliverymen.create(req.body);
+    const { id, name, email } = await Deliverymen.create(req.body);
 
-    return res.json({ name, email, message: 'Deliveryman success created ' });
+    return res.json({ id, name, email });
   }
 
   async show(req, res) {
