@@ -4,6 +4,7 @@ import Order from '../Models/Order';
 import Recipient from '../Models/Recipient';
 import Deliverymen from '../Models/Deliverymen';
 
+/* Etapa importante do projeto não desista! */
 class RegisterOrders {
   async store(req, res) {
     const schema = Yup.object().shape({
