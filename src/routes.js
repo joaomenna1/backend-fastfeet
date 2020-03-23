@@ -10,6 +10,8 @@ import FileController from './app/Controllers/FileController';
 import SignatureController from './app/Controllers/SignatureController';
 import DeliverymanController from './app/Controllers/DeliverymanController';
 import RegisterOrderController from './app/Controllers/RegisterOrdersController';
+import WithdrawalsController from './app/Controllers/WithdrawalsController';
+import FinishedOrderController from './app/Controllers/FinishedOrderController';
 
 import authMiddleware from './app/middleware/auth';
 
@@ -41,6 +43,11 @@ routes.get('/files', FileController.index);
 routes.post('/signature', upload.single('sign'), SignatureController.store);
 
 /* Routes for register (product) orders recipient and deliveryman */
-routes.post('/register_order', RegisterOrderController.store);
+routes.post('/register_order', RegisterOrderController.update);
 
+/* Routes for withdrawals product */
+routes.put('/withdrawals', WithdrawalsController.update);
+
+/* Router for finished order */
+routes.put('/finish_order', FinishedOrderController.update);
 export default routes;
