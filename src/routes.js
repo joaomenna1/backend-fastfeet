@@ -43,7 +43,7 @@ routes.get('/files', FileController.index);
 routes.post('/signature', upload.single('sign'), SignatureController.store);
 
 /* Routes for register (product) orders recipient and deliveryman */
-routes.post('/register_order', RegisterOrderController.update);
+routes.post('/register_order', RegisterOrderController.store);
 
 /* Routes for withdrawals product */
 routes.put('/withdrawals', WithdrawalsController.update);
