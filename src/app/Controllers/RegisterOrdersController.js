@@ -5,7 +5,7 @@ import Recipient from '../Models/Recipient';
 import Deliverymen from '../Models/Deliverymen';
 
 class RegisterOrdersController {
-  async store(req, res) {
+  async update(req, res) {
     const schema = Yup.object().shape({
       product: Yup.string().required(),
       recipient_id: Yup.number().required(),
