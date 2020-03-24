@@ -1,6 +1,8 @@
 import * as Yup from 'yup';
+import { parseISO, isAfter, isBefore, setHours } from 'date-fns';
 
 import Order from '../Models/Order';
+import Deliveryman from '../Models/Deliverymen';
 
 class WithdrawalsController {
   async update(req, res) {
@@ -12,37 +14,51 @@ class WithdrawalsController {
       return res.status(400).json({ error: 'Validations fails' });
     }
 
-    const { start_date } = req.body;
-    const { order_id } = req.params;
+    const { orderId, deliverymanId } = req.params;
 
-    const withdrawalProduct = await Order.findByPk(order_id);
+    const deliveryman = await Deliveryman.findByPk(deliverymanId);
 
-    if (!withdrawalProduct) {
-      return res.status(401).json({ error: 'Not found order!' });
+    if (!deliveryman) {
+      return res.status(401).json({ error: 'Delivery does not exists.' });
     }
 
-    const {
-      id,
-      recipient_id,
-      delivery_id,
-      signature_id,
-      product,
-      canceled_at,
-      end_date,
-    } = withdrawalProduct.update({
-      start_date,
+    const order = await Order.findByPk(orderId);
+
+    if (!order) {
+      return res.status(401).json({ error: 'Order does not exists.' });
+    }
+
+    /* Procuro e conto as vezes daquele entregador tem no banco de dados
+    de acordo com WHERE */
+    const { count } = await Order.findAndCountAll({
+      where: {
+        deliveryman_id: deliverymanId,
+        start_date: null,
+        signature_id: null,
+      },
     });
 
-    return res.json({
-      id,
-      recipient_id,
-      delivery_id,
-      signature_id,
-      product,
-      canceled_at,
-      start_date,
-      end_date,
-    });
+    if (count === 5) {
+      return res
+        .status(401)
+        .json({ error: 'Permitted withdrawal numbers are only 5 times' });
+    }
+
+    const { start_date } = req.body;
+    const dateISO = parseISO(start_date);
+
+    if (
+      isBefore(dateISO, setHours(new Date(), 8)) ||
+      isAfter(dateISO, setHours(new Date(), 18))
+    ) {
+      return res.status(400).json({
+        error: 'allowed time is only from 8 am to 6 pm from withdrawals',
+      });
+    }
+
+    await order.update({ start_date, status: 'RETIRADA' });
+
+    return res.json({});
   }
 }
 
