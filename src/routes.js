@@ -46,8 +46,14 @@ routes.post('/signature', upload.single('sign'), SignatureController.store);
 routes.post('/register_order', RegisterOrderController.store);
 
 /* Routes for withdrawals product */
-routes.put('/withdrawals/:order_id', WithdrawalsController.update);
+routes.put(
+  '/deliveryman/:deliverymanId/withdrawals/:orderId/order_mission',
+  WithdrawalsController.update
+);
 
 /* Router for finished order */
-routes.put('/finish_order/:order_id', FinishedOrderController.update);
+routes.put(
+  '/deliveryman/:deliverymanId/order_mission/:orderId/accomplished',
+  FinishedOrderController.update
+);
 export default routes;
