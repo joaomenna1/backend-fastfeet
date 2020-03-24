@@ -16,7 +16,7 @@ class RegisterOrdersController {
       return res.status(400).json({ error: 'Validations fails' });
     }
 
-    const { recipient_id, deliveryman_id } = req.body;
+    const { product, recipient_id, deliveryman_id } = req.body;
 
     const recipient = await Recipient.findByPk(recipient_id);
 
@@ -34,9 +34,14 @@ class RegisterOrdersController {
         .json({ error: 'Deliveryman not found or does not exist.' });
     }
 
-    const { product } = await Order.create(req.body);
+    const response = await Order.create({
+      product,
+      recipient_id,
+      deliveryman_id,
+      status: 'PENDENTE',
+    });
 
-    return res.json({ product, recipient_id, deliveryman_id });
+    return res.json(response);
   }
 }
 
