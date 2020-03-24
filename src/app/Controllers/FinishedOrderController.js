@@ -1,31 +1,48 @@
-import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 import Order from '../Models/Order';
+import Deliveryman from '../Models/Deliverymen';
+import Signature from '../Models/Signature';
 
 class FinishedController {
   async update(req, res) {
-    const schema = Yup.object().shape({
-      order_id: Yup.number().required(),
-      end_date: Yup.date().required(),
-    });
+    const { deliverymanId, orderId } = req.params;
 
-    if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validations fails' });
+    const deliveryman = await Deliveryman.findByPk(deliverymanId);
+
+    if (!deliveryman) {
+      return res.status(401).json({ error: 'Deliveryman does not exists.' });
     }
 
-    const { order_id, end_date } = req.body;
-
-    const withdrawlProduct = await Order.findByPk(order_id);
-
-    if (!withdrawlProduct) {
-      return res.status(401).json({ error: 'Not found order!' });
-    }
-
-    const dateWithdrawl = withdrawlProduct.update({
-      end_date,
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+        start_date: { [Op.not]: null },
+        signature_id: null,
+      },
     });
 
-    return res.json(dateWithdrawl);
+    if (!order) {
+      return res.status(401).json({ error: 'Order delivery does not exists.' });
+    }
+
+    const { signature_id } = req.body;
+
+    const signatureExist = await Signature.findByPk(signature_id);
+
+    if (!signatureExist) {
+      return res
+        .status(401)
+        .json({ error: 'Customer signature does not exists.' });
+    }
+
+    await order.update({
+      end_date: new Date(),
+      signature_id,
+      status: 'ENTREGUE',
+    });
+
+    return res.json({});
   }
 }
 
