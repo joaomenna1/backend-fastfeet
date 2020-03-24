@@ -6,6 +6,7 @@ class Order extends Model {
       {
         product: Sequelize.STRING,
         start_date: Sequelize.DATE,
+        status: Sequelize.STRING,
         end_date: Sequelize.DATE,
         canceled_at: Sequelize.DATE,
       },
@@ -26,6 +27,10 @@ class Order extends Model {
     this.belongsTo(models.Deliverymen, {
       foreignKey: 'deliveryman_id',
       as: 'deliveryman',
+    });
+    this.belongsTo(models.Signature, {
+      foreignKey: 'signature_id',
+      as: 'signature',
     });
   }
 }
