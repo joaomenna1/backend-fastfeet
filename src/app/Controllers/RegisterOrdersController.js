@@ -36,14 +36,6 @@ class RegisterOrdersController {
 
     const { product } = await Order.create(req.body);
 
-    const productExist = await Order.findOne({
-      where: { product: req.body.product },
-    });
-
-    if (productExist) {
-      return res.status(400).json({ error: 'Product already exist.' });
-    }
-
     return res.json({ product, recipient_id, deliveryman_id });
   }
 }

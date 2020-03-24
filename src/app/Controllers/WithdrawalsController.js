@@ -5,7 +5,6 @@ import Order from '../Models/Order';
 class WithdrawalsController {
   async update(req, res) {
     const schema = Yup.object().shape({
-      order_id: Yup.number().required(),
       start_date: Yup.date().required(),
     });
 
@@ -13,19 +12,37 @@ class WithdrawalsController {
       return res.status(400).json({ error: 'Validations fails' });
     }
 
-    const { order_id, start_date } = req.body;
+    const { start_date } = req.body;
+    const { order_id } = req.params;
 
-    const withdrawlProduct = await Order.findByPk(order_id);
+    const withdrawalProduct = await Order.findByPk(order_id);
 
-    if (!withdrawlProduct) {
+    if (!withdrawalProduct) {
       return res.status(401).json({ error: 'Not found order!' });
     }
 
-    const dateWithdrawl = withdrawlProduct.update({
+    const {
+      id,
+      recipient_id,
+      delivery_id,
+      signature_id,
+      product,
+      canceled_at,
+      end_date,
+    } = withdrawalProduct.update({
       start_date,
     });
 
-    return res.json(dateWithdrawl);
+    return res.json({
+      id,
+      recipient_id,
+      delivery_id,
+      signature_id,
+      product,
+      canceled_at,
+      start_date,
+      end_date,
+    });
   }
 }
 
